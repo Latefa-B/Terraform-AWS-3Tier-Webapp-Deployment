@@ -20,6 +20,9 @@ The aim of this project is to :
 - Deploy RDS in private subnets
 - Understand bastion SSH and private EC2 workflows
 
+## Design of the Application Architecture on AWS
+<img width="449" height="672" alt="Screenshot 2025-07-08 at 11 52 38 AM" src="https://github.com/user-attachments/assets/2f158b7b-8fdb-4191-b754-92766cd15d0e" />
+
 ## Part 1 : Deploy the Web Tier with Load Balancer and Auto Scaling Using Terraform 
 ### Prerequisites
 In order to proceed, we need to make sure beforehand to : 
@@ -140,9 +143,6 @@ Each configuration file defines how to provision and manage infrastructure resou
 - **app_server.tf** : defines the infrastructure for an application server.
 - **rds.tf** : defines the configuration to create and manage the RDS database instance. 
 - **nat_gateway.tf** : define and configure a NAT gateway within the VPC.
-
-### Design of the Application Architecture on AWS
-<img width="449" height="672" alt="Screenshot 2025-07-08 at 11 52 38 AM" src="https://github.com/user-attachments/assets/2f158b7b-8fdb-4191-b754-92766cd15d0e" />
 
 ### Step-by-Step Instructions : 
 #### Step 1: Add Private Subnets for the Application and the Databases
