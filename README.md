@@ -125,35 +125,8 @@ Now that we have defined the configuration files, we will deploy the infrastruct
 - **Auto Scaling Group**
 <img width="1458" height="719" alt="41" src="https://github.com/user-attachments/assets/3f1ad444-4e1c-4bf1-995c-dae56a197714" />
 
-#### Step 10 : Destroy (Cleanup)
-Now that your web server application was deployed successfully, clean up your infrastructure ! This prevents charges on your AWS account.
-- Run terraform destroy command : to delete the infrastructure and remove all the resources managed by terraform.
-- Type yes when prompted.
-<img width="1258" height="858" alt="42" src="https://github.com/user-attachments/assets/6ff98934-d597-4569-9af2-9d983b53d170" />
-<img width="1085" height="886" alt="43" src="https://github.com/user-attachments/assets/f270839b-74c2-4848-97ce-23c05f7d5cc5" />
-<img width="1363" height="877" alt="44" src="https://github.com/user-attachments/assets/eb9f45d2-008a-4122-963d-6cdd688f760e" />
-<img width="1366" height="873" alt="45" src="https://github.com/user-attachments/assets/4eefc4cf-d980-4523-846b-965564d7f8f1" />
-<img width="1231" height="885" alt="46" src="https://github.com/user-attachments/assets/bc979af6-e3ac-4214-87f8-11cf9c428214" />
-<img width="1291" height="882" alt="47" src="https://github.com/user-attachments/assets/61ba823b-2f7d-42e9-a5dd-864f33a7d138" />
-<img width="1016" height="886" alt="48" src="https://github.com/user-attachments/assets/0412e014-517f-41d9-8c39-ee888f6643b8" />
-<img width="1182" height="887" alt="49" src="https://github.com/user-attachments/assets/569d3001-3719-487e-bec7-5aa83d20f654" />
-<img width="933" height="887" alt="50" src="https://github.com/user-attachments/assets/1f829368-f43a-4954-b736-b12c2b5900bb" />
-
-- Check your infrastructure on AWS Console. The VPC was deleted as well as its components.
-<img width="1457" height="474" alt="51" src="https://github.com/user-attachments/assets/b28e9b17-a7b7-4582-a43d-9652c268672a" />
-
-
-
-# Step-by-Step Guide to Deploy a 3-Tier AWS Architecture Using Terraform - Part 2 : Application & Database Tiers
-Deploying a 3-Tier Architecture with Load Balancer and Auto Scaling using Terraform as an Infrastructure as Code (IaC) tool, is a powerful approach to provision and manage such a robust Cloud Infrastructure. Deploying and managing it can be complex and time-consuming, but Terraform enables us to automate the process, in a consistent, efficient and repeatable way, reducing human errors.
-This comprehensive step-by-step guide walks you through the process of  deploying a 3-Tier Architecture on AWS using a modular and production-style Terraform setup. Previously, we have deployed the web tier only of this 3-tier Architecture with ALB and ASG. In this part, we will be focusing on the application and database tiers, using AWS services like : VPC, Subnets, NAT Gateway, Internet Gateway, Route Tables, Security Groups, Bastion EC2, App EC2 (private), MySQL RDS and ALB + Auto Scaling. The aim of this project is to : 
-- Build a secure, production-style 3-tier VPC environment
-- Use Launch Templates, ALB, and Auto Scaling Groups
-- Deploy RDS in private subnets
-- Use Terraform modularity and outputs
-- Understand bastion SSH and private EC2 workflows
-
-## Prerequisites 
+## Part 2 : Deploy the Application and Database Tiers Using Terraform 
+### Prerequisites 
 In order to proceed, we need to make sure beforehand to : 
 - Have Terraform and AWS CLI installed. 
 - Have AWS credentials (aws configure) configured.
@@ -168,44 +141,44 @@ Each configuration file defines how to provision and manage infrastructure resou
 - **rds.tf** : defines the configuration to create and manage the RDS database instance. 
 - **nat_gateway.tf** : define and configure a NAT gateway within the VPC.
 
-## Design of the Application Architecture on AWS
+### Design of the Application Architecture on AWS
 <img width="449" height="672" alt="Screenshot 2025-07-08 at 11 52 38 AM" src="https://github.com/user-attachments/assets/2f158b7b-8fdb-4191-b754-92766cd15d0e" />
 
-## Step-by-Step Instructions : 
-### Step 1: Add Private Subnets for the Application and the Databases
+### Step-by-Step Instructions : 
+#### Step 1: Add Private Subnets for the Application and the Databases
 On your configuration file vpc.tf , append the code below. This tells Terraform to create three private subnets within the VPC. Two private subnets for the databases and one private subnet that will host the application backend’s. 
 <img width="742" height="844" alt="2" src="https://github.com/user-attachments/assets/2b22db76-9bad-43a9-a701-a5c3f195a72e" />
 <img width="523" height="234" alt="3" src="https://github.com/user-attachments/assets/80488555-1994-4104-b511-c090345cf1a2" />
 
-### Step 2: Add NAT Gateway and Private Routing
+#### Step 2: Add NAT Gateway and Private Routing
 - On your nat_gateway.tf configuration file, add the code below. This will create a Nat Gateway on your VPC, configure private route tables and associate them to the private subnets. The NAT allows resources in private subnets to reach the internet for software updates without being exposed to it.
 
 <img width="498" height="529" alt="5" src="https://github.com/user-attachments/assets/cdf67bef-3b80-4617-bba8-470b98ac753f" />
 
-### Step 3: Add Bastion Host
+#### Step 3: Add Bastion Host
 - On your bastion.tf configuration file, add the code below. This will create an EC2 instance in the public subnet that will be used as a bastion host for the application.
 
 <img width="570" height="188" alt="7" src="https://github.com/user-attachments/assets/ae60adcd-8794-4a9b-ac83-b0776ecfd001" />
 
 
-### Step 4: App Tier EC2 (Private)
+#### Step 4: App Tier EC2 (Private)
 - On your app_server.tf configuration file, add the code below. This will configure the application in the private subnet. Your application logic should not be accessible directly from the internet.
 
 <img width="567" height="314" alt="9" src="https://github.com/user-attachments/assets/d02d30c3-86db-4205-b756-3aefbb021c28" />
 
 
-### Step 5: RDS in Private Subnets
+#### Step 5: RDS in Private Subnets
 On your rds.tf configuration file, add the code below. This will configure the RDS Database instance. Databases are sensitive and should always live in private subnets, only accessible by specific EC2s.
 <img width="563" height="351" alt="11" src="https://github.com/user-attachments/assets/40beca2b-c7b1-405a-afcc-68cc5e0d2f59" />
 
 
-### Step 6: Outputs
+#### Step 6: Outputs
 - On your outputs.tf file, append the code below. The output.tf configuration file is optional but helpful, it allows users to understand the configuration and review its expected outputs. It shows the frontend alb dns, the bastion's public URL and the tds endpoint after Terraform finishes applying the configuration.
   
 <img width="460" height="297" alt="13" src="https://github.com/user-attachments/assets/b79969e6-719b-4507-9d2e-9d22ea04c817" />
 
 
-### Step 7 : Deploy Your Infrastructure
+#### Step 7 : Deploy Your Infrastructure
 Now that we have defined the configuration files, we will deploy the infrastructure.
 - Run terraform init command : to Initialize the working directory/project, download the necessary plugins and prepare terraform.
 <img width="610" height="263" alt="14" src="https://github.com/user-attachments/assets/cd6bb0bc-307b-418b-bf9f-aa2305bd8f50" />
@@ -304,7 +277,7 @@ Now that we have fixed the configuration files, run the ‘terraform plan’ com
 <img width="1418" height="743" alt="56" src="https://github.com/user-attachments/assets/f0c2f8e1-5f47-46a5-a429-bf71a1539f88" />
 
 
-### Step 8 : Test the Application
+#### Step 8 : Test the Application
 Now that we have deployed the infrastructure and the Application we will test the application.
 To connect to the Application tier EC2 instance from the bastion host instance : Copy the ssh key pair from your local server to the bastion server  using scp command then SSH into the bastion host instance from your local server.
 - SSH into the application tier instance from the bastion host
@@ -317,7 +290,7 @@ To connect to the Application tier EC2 instance from the bastion host instance :
 - Check the application from the browser using the Application Load Balancer DNS.
 <img width="1205" height="239" alt="B" src="https://github.com/user-attachments/assets/46a1d2d7-a8c8-43ab-aa64-81310a9d6423" />
 
-### Step 9 : Destroy (Cleanup)
+#### Step 9 : Destroy (Cleanup)
 Now that your web server application was deployed successfully, clean up your infrastructure ! This prevents charges on your AWS account.
 - Run terraform destroy command : to delete the infrastructure and remove all the resources managed by terraform.
 - Type yes when prompted.
@@ -335,13 +308,6 @@ Now that your web server application was deployed successfully, clean up your in
 <img width="1408" height="492" alt="66" src="https://github.com/user-attachments/assets/e05dfb05-4195-47ff-83bb-6249ce0259de" />
 
 ### Summary
-This breakdown provides a step-by-step guide to deploy a 3-Tier Architecture with Load Balancer and Auto Scaling on AWS using Terraform. By completing this lab, we had an overview on how to : 
-- Build the infrastructure from scratch using a modular and production-style Terraform setup, from creating the VPC, to configuring subnets and internet gateway, to connecting to the internet using Internet Gateway and understanding how routing works in AWS  but also to deploying multiple EC2 instances automatically using an Auto Scaling Group, balancing incoming traffic with a Load Balancer and what security best practices to set up with security groups to control access.
-- Organize Terraform code into separate files like in real-word production to keep the code clean, maintainable and reusable. Separating configuration files in blocks has several benefits like enhancing scalability, a better organization and team collaboration. It improves readability, reusability and maintainability of the code. It allows different teams to work on different parts of the project at the same time. Helps manage large and complex infrastructure, but also, promotes faster troubleshooting.
-
-Building Infrastructure with Terraform as an IaC tool is an approach that not only provision, manage, and replicate cloud resources in a predictable and automated way. But also, reduces manual errors and enhances the scalability and maintainability of the infrastructure. This approach of building infrastructure using IaC, demonstrated how it can simplify and automate the process of deploying and managing a well-structured private network environment that requires high security and scalability and more complex cloud infrastructures. But also how Terraform lays the foundation for modern DevOps practices such as CI/CD, monitoring, and infrastructure testing.
-
-### Summary2
 This breakdown provides a step-by-step guide to deploy a 3-Tier Architecture (web tier, app tier and db tier), with Load Balancer and Auto Scaling on AWS using Terraform. By completing this lab, we had an overview on how to : 
 - Build a secure, production-style 3-tier VPC environment using a modular and production-style Terraform setup : From setting up the Virtual Private Network : VPC and its components, to setting up the ALB, and Auto Scaling Groups for the Web Tie, to setting up the bastion host to access the private EC2 Instance in the Application Tier to configuring an RDS Database for the DB Tier. 
 - Organize Terraform code into separate files like in real-word production to keep the code clean, maintainable and reusable. Separating configuration files in blocks has several benefits like enhancing scalability, a better organization and team collaboration. It improves readability, reusability and maintainability of the code. It allows different teams to work on different parts of the project at the same time. Helps manage large and complex infrastructure, but also, promotes faster troubleshooting.
